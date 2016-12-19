@@ -14,6 +14,8 @@ The HTML Help Compiler might already be installed on your Windows System. The pr
 > python jd2chm.py -c
 ```
 
+The HTML Help Compiler is available at: https://msdn.microsoft.com/en-us/library/windows/desktop/ms669985(v=vs.85).aspx
+
 ## CHM Project Files
 
 jd2chm creates the following HTML Help project files:
