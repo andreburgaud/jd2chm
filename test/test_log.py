@@ -19,7 +19,7 @@ def testLog(log, level):
 
 def test():
   print ("Testing {}...".format(sys.argv[0]))
-  jd2chm_logging = jd2chm_utils.getLogging(1)
+  jd2chm_logging = jd2chm_utils.get_logging(1)
   log = jd2chm_logging.logger
   for level in range(6):
     jd2chm_logging.setLevel(level)

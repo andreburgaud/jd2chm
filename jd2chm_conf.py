@@ -140,7 +140,7 @@ class Jd2chmConfig:
     configuration parameters and manage the configuration files."""
 
     def __init__(self):
-        self.log = jd2chm_utils.getLog()
+        self.log = jd2chm_utils.get_log()
         self.compiler = None  # pyhhc or mshhc
         self.css_path = None  # CSS file path used during CHM build
         self.javadoc_path = None  # Path of the last Javadoc compiled with jd2chm
@@ -187,7 +187,7 @@ class Jd2chmConfig:
         f.close()
 
     def setLogLevel(self):
-        jd2chm_utils.getLogging().setLevel(self.level)
+        jd2chm_utils.get_logging().setLevel(self.level)
 
     def reloadDefaultConfig(self):
         if os.path.exists(self.config_path):

@@ -19,7 +19,7 @@ FOREGROUND_YELLOW = 0x0006
 FOREGROUND_GREY = 0x0007
 DEFAULT_COLOR = FOREGROUND_GREY
 
-FOREGROUND_INTENSITY = 0x0008 # foreground color is intensified.
+FOREGROUND_INTENSITY = 0x0008  # foreground color is intensified.
 
 BACKGROUND_BLACK = 0x0000
 BACKGROUND_BLUE = 0x0010
@@ -30,20 +30,22 @@ BACKGROUND_MAGENTA = 0x0050
 BACKGROUND_YELLOW = 0x0060
 BACKGROUND_GREY = 0x0070
 
-BACKGROUND_INTENSITY = 0x0080 # background color is intensified.
+BACKGROUND_INTENSITY = 0x0080  # background color is intensified.
 
 h_stdout = windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
+SetConsoleTextAttribute = windll.kernel32.SetConsoleTextAttribute
 
-setConsoleColor = windll.kernel32.SetConsoleTextAttribute
 
-def setColor(color=0):
-  if color:
-    setConsoleColor(h_stdout, color)
-  else:
-    setConsoleColor(h_stdout, DEFAULT_COLOR)
+def set_color(color=0):
+    if color:
+        SetConsoleTextAttribute(h_stdout, color)
+    else:
+        SetConsoleTextAttribute(h_stdout, DEFAULT_COLOR)
 
-def setBrightColor(color=0):
-  if color:
-    setConsoleColor(h_stdout, color | FOREGROUND_INTENSITY)
-  else:
-    setConsoleColor(h_stdout, DEFAULT_COLOR | FOREGROUND_INTENSITY)
+
+def set_bright_color(color=0):
+    if color:
+        SetConsoleTextAttribute(h_stdout, color | FOREGROUND_INTENSITY)
+    else:
+        SetConsoleTextAttribute(h_stdout, DEFAULT_COLOR | FOREGROUND_INTENSITY)
+

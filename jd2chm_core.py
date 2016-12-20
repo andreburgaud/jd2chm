@@ -38,7 +38,7 @@ class Hhp:
         self.project_name = project_name
         self.project_title = project_title
         self.default_file = default_file
-        self.log = jd2chm_utils.getLog()
+        self.log = jd2chm_utils.get_log()
 
     def create_hhp(self):
         hhp_file_name = self.project_name + ".hhp"
@@ -81,7 +81,7 @@ class Hhc:
         self.hhc_file_name = project_name + ".hhc"
         self.content_file = content_file
         self.default_file = default_file
-        self.log = jd2chm_utils.getLog()
+        self.log = jd2chm_utils.get_log()
         # Regex to extract href and title for a book topic
         self.re_anchor_book = re.compile(r'^<li><a\shref="([^"]*)".*>(.*)</a></li>', re.I)
         # Regex to extract href, type (interface or class), title for a page topic
@@ -295,7 +295,7 @@ class Hhk:
         # Regexp to eliminate the "../.." prefix
         self.re_href = re.compile(r'(../)*(.*)')
         self.cpt = 0
-        self.log = jd2chm_utils.getLog()
+        self.log = jd2chm_utils.get_log()
 
     def create_hhk(self):
         self.hhk_file = open(self.hhk_file_name, 'w')
@@ -379,7 +379,7 @@ class ChmProject:
     def __init__(self):
         self.content_file = ''
         self.default_file = ''
-        self.log = jd2chm_utils.getLog()
+        self.log = jd2chm_utils.get_log()
 
     def parse_re_index_html(self):
         """Parses index.html file to retrieve the files to be parsed in order to create
@@ -434,7 +434,7 @@ class ChmEnv:
     """
 
     def __init__(self):
-        self.log = jd2chm_utils.getLog()
+        self.log = jd2chm_utils.get_log()
 
     def prepare_env(self, project_name, jdoc_dir):
         self.project_name = project_name
@@ -553,14 +553,12 @@ class ChmEnv:
                 except OSError as ose:
                     # TODO: will need to abort something here
                     self.log.error(ose)
-            self.log.info("Copying Javadoc files to %s" % tmp_dir)
             cpt = 0
             while True:
                 try:
                     cpt += 1
-                    self.log.info(
-                        "Copying Javadoc files to {}. It may take a while for a large size Java Documentation...".format(
-                            tmp_dir))
+                    self.log.info("Copying Javadoc files to {}.".format(tmp_dir))
+                    self.log.info("It may take a while for a large size Java Documentation.")
                     shutil.copytree(jdoc_dir, tmp_dir)
                     break
                 except PermissionError as pe:
