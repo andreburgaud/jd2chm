@@ -4,7 +4,7 @@
 CUSTOM_CSS = 0
 
 # Reuse temp file (mostly for development or to avoid copying large Javadoc like the JDK API
-REUSE_TEMP_FILES = 1
+REUSE_TEMP_FILES = 0
 
 MAX_SIZE_KEYWORD = 300
 
