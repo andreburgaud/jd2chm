@@ -30,27 +30,32 @@ A CHM generated with `j2chm` will look similar to the following one (Groovy 2.5.
 
 ## Usage of jd2chm
 
-1. Clone j2chm: `git clone https://github.com/andreburgaud/jd2chm.git
-2. In the newly created j2chm directory, create a Python virtual environment:
+* Clone j2chm:
+
+```
+> git clone https://github.com/andreburgaud/jd2chm.git
+```
+
+* In the newly created j2chm directory, create a Python virtual environment:
 
 ```
 > py -m venv ENV
 ```
 
-3. Activate the virtual environment:
+* Activate the virtual environment:
 
 ```
 > ENV\Scripts\activate
 (ENV) >
 ```
 
-4. Install 3rd party libraries
+* Install 3rd party libraries
 
 ```
 (ENV) > pip install -r requirements.txt
 ```
 
-5. Execute `j2chm` with `-h` option to ensure it works:
+* Execute `j2chm` with `-h` option to ensure it works:
 
 ```
 (ENV) >python jd2chm.py -h
