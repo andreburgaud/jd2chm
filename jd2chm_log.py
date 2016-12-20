@@ -14,7 +14,7 @@ class WinHandler(logging.Handler):
         self.win = win
 
     def emit(self, record):
-        if self.win
+        if self.win:
             line = self.format(record)
             self.win.addLogText(line)
 
