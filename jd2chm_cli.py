@@ -7,38 +7,38 @@ import os
 import getopt
 import re
 
-import jd2chm_utils
-import jd2chm_const
+import jd2chm_utils as utils
+import jd2chm_const as const
 import jd2chm_core
 import lib_console as console
 
 
 def usage():
     """Display Usage."""
-    console.setBrightColor()
-    print(jd2chm_const.USAGE)
-    console.setColor()
+    console.set_bright_color()
+    print(const.USAGE)
+    console.set_color()
 
 
 def lic():
     """Display License."""
-    console.setBrightColor(console.FOREGROUND_BLUE)
-    print(jd2chm_const.MIT_LICENSE)
-    console.setColor()
+    console.set_color(console.FOREGROUND_YELLOW)
+    utils.print_center_block(const.MIT_LICENSE, 70)
+    console.set_color()
 
 
 def thanks():
     """Display thank you message."""
-    console.setBrightColor(console.FOREGROUND_BLUE)
-    print(jd2chm_const.MSG_THANKS)
-    console.setColor()
+    console.set_color(console.FOREGROUND_GREEN)
+    utils.print_center_block(const.MSG_THANKS)
+    console.set_color()
 
 
 def welcome():
     """Display welcome message."""
-    console.setBrightColor(console.FOREGROUND_GREEN)
-    print(jd2chm_const.MSG_WELCOME % jd2chm_const.VERSION)
-    console.setColor()
+    console.set_color(console.FOREGROUND_GREEN)
+    utils.print_center_block(const.MSG_WELCOME % const.VERSION)
+    console.set_color()
 
 
 def get_title(index_html):
@@ -67,11 +67,11 @@ def get_index_html(javadoc_dir):
     """Checks and returns the index.html path."""
     # TODO: Check if directory exists and provide a different message (directory does not exist vs.
     # there is no index.html)
-    index_html = os.path.join(javadoc_dir, jd2chm_const.INDEX_HTML)
+    index_html = os.path.join(javadoc_dir, const.INDEX_HTML)
     if not os.path.exists(index_html):
-        console.setBrightColor(console.FOREGROUND_RED)
-        print(jd2chm_const.NOT_JAVADOC_DIR_MESSAGE % (javadoc_dir, index_html))
-        console.setColor()
+        console.set_bright_color(console.FOREGROUND_RED)
+        print(const.NOT_JAVADOC_DIR_MESSAGE % (javadoc_dir, index_html))
+        console.set_color()
         return None
     return index_html
 
@@ -90,7 +90,7 @@ def main():
     project_title = None
     start_dir = os.getcwd()
     javadoc_dir = '.'
-    log = jd2chm_utils.getLog()
+    log = utils.get_log()
 
     for o, a in opts:
         if o == "-h":
