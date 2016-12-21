@@ -24,19 +24,19 @@ The HTML Help Compiler is available at: https://msdn.microsoft.com/en-us/library
 
 ## CHM File
 
-A CHM generated with `j2chm` will look similar to the following one (Groovy 2.5.0):
+A CHM generated with `jd2chm` will look similar to the following one (Groovy 2.5.0):
 
 ![jd2chm](https://s3.amazonaws.com/burgaud-download/jd2chm_groovy250.png)
 
 ## Usage of jd2chm
 
-* Clone j2chm:
+* Clone jd2chm:
 
 ```
 > git clone https://github.com/andreburgaud/jd2chm.git
 ```
 
-* In the newly created j2chm directory, create a Python virtual environment:
+* In the newly created jd2chm directory, create a Python virtual environment:
 
 ```
 > py -m venv ENV
@@ -55,10 +55,10 @@ A CHM generated with `j2chm` will look similar to the following one (Groovy 2.5.
 (ENV) > pip install -r requirements.txt
 ```
 
-* Execute `j2chm` with `-h` option to ensure it works:
+* Execute `jd2chm` with `-h` option to ensure it works:
 
 ```
-(ENV) >python jd2chm.py -h
+(ENV) > python jd2chm.py -h
 Internal compiler not available
 
 =====================================
