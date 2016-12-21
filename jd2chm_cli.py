@@ -34,11 +34,10 @@ def thanks():
     console.set_color()
 
 
+@console.style(console.FOREGROUND_GREEN)
 def welcome():
     """Display welcome message."""
-    console.set_color(console.FOREGROUND_GREEN)
     utils.print_center_block(const.MSG_WELCOME % const.VERSION)
-    console.set_color()
 
 
 def get_title(index_html):

@@ -3,6 +3,8 @@ Exposes methods to change the color of the output in a console.
 """
 from ctypes import *
 
+BRIGHT=True
+
 # winbase.h
 STD_INPUT_HANDLE = -10
 STD_OUTPUT_HANDLE = -11
@@ -49,3 +51,18 @@ def set_bright_color(color=0):
     else:
         SetConsoleTextAttribute(h_stdout, DEFAULT_COLOR | FOREGROUND_INTENSITY)
 
+
+def style(color=0, bright=False):
+    def decor_set_color(func):
+        def wrapper():
+            if bright:
+                SetConsoleTextAttribute(h_stdout, color | FOREGROUND_INTENSITY)
+            else:
+                SetConsoleTextAttribute(h_stdout, color)
+            func()
+            if bright:
+                SetConsoleTextAttribute(h_stdout, DEFAULT_COLOR | FOREGROUND_INTENSITY)
+            else:
+                SetConsoleTextAttribute(h_stdout, DEFAULT_COLOR)
+        return wrapper
+    return decor_set_color
