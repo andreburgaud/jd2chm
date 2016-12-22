@@ -6,7 +6,7 @@ After generating the project files, it invokes the HTML Help compiler. The HTML 
 
 `j2dchm` was tested with Python 3.5.2.
 
-**Note**: `jd2chm` was initially created in 2001 and targeted Python 2.2 and 2.3. I decided to "brush" it again in order to make it compatible with Python 3 and to generate CHM files from recent Javadocs (i.e. Java 8 API).
+**Note**: `jd2chm` was initially created in 2001 and ended up targeting Python 2.2 and 2.3 in 2004. I decided to "brush" it again in order to make it compatible with Python 3 and to generate CHM files from recent Javadocs (i.e. Java 8 API).
 
 ## HTML Help Compiler
 
@@ -59,21 +59,19 @@ A CHM generated with `jd2chm` will look similar to the following one (Groovy 2.5
 
 ```
 (ENV) > python jd2chm.py -h
-Internal compiler not available
 
-=====================================
-        jd2chm Version 2.0b
-Copyright (c) 2000-2006 Andre Burgaud
-     http://www.burgaud.com/
-=====================================
+                         jd2chm version 1.0.0b1
+                 Copyright (c) 2001-2016 Andre Burgaud
+                        http://www.burgaud.com/
 
 Usage:
 
-  jd2chm.py [ -h | -c | -l | [-d dir] [-p project] [-t title] ]
+  jd2chm.py [ -h | -c | -l | [-d dir] [-p project] [-t title] [-v] ]
 
   -h: Displays usage.
   -c: Checks if the HHC compiler is installed.
   -l: Displays license.
+  -v: Verbose (displays debug information)
   -d dir: 'dir' is the directory containing a Javadoc
           documentation (default: current directory).
   -p name: the base name of the project files will be 'name'
@@ -91,7 +89,7 @@ jd2chm.py -d C:\beanshell\javadoc
   The user is prompted to possibly modify the default values for the
   project name and document title.
 
-jd2chm.py -d C:\beanshell\javadoc -p bsh20b4 -t "Beanshell 2.0b4"
+jd2chm.py -d C:\beanshell\javadoc -p bsh20b4 -t "Beanshell 2.0b4" -v
 
 jd2chm.py -d C:\j2se\docs\api -p j2se142_02 -t "Java(TM) 2 SDK 1.4.2"
 

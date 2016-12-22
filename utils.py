@@ -2,12 +2,10 @@ import os
 import sys
 import shutil
 
-import jd2chm_log as log
-import jd2chm_conf as conf
-import jd2chm_const as const
+import log
+import const
 
 logging = None
-config = None
 
 
 def get_app_dir():
@@ -23,17 +21,9 @@ def get_logging(level=2):
     return logging
 
 
-def get_log():
+def get_log(level=2):
     """Facilitate sharing the logger across the different modules."""
-    return get_logging().logger
-
-
-def get_conf():
-    global config
-    if not config:
-        config = conf.Jd2chmConfig()
-        config.init()
-    return config
+    return get_logging(level).logger
 
 
 def term_width():

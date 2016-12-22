@@ -3,11 +3,11 @@ Logging class for jd2chm
 """
 
 import logging
-import lib_console as console
+import console
 
 
 class WinHandler(logging.Handler):
-    """EditCtrl Handler"""
+    """EditCtrl Handler (for jd2chm UI, if available)"""
 
     def __init__(self, win):
         logging.Handler.__init__(self)
@@ -40,34 +40,38 @@ class ColorHandler(logging.StreamHandler):
 
 
 class Jd2chmLogging:
-    def __init__(self, level=2):
+    DEBUG = 1
+    INFO = 2
+
+    def __init__(self, level=INFO):
         self.logger = logging.getLogger('jd2chm')
         # self.formatter = logging.Formatter('[%(asctime)s] %(levelname)-8s %(message)s')
         self.formatter = logging.Formatter('[%(asctime)s] %(message)s', '%Y-%m-%d %H:%M:%S')
-        self.setLevel(level)
+        self.set_level(level)
         # self.stream_handler = logging.StreamHandler()
         self.stream_handler = ColorHandler()
         self.stream_handler.setFormatter(self.formatter)
         self.logger.addHandler(self.stream_handler)
+        self.win_handler = None
 
-    def addWinHandler(self, win):
-        """Add a windows handler to allow logging in the GUI."""
+    def add_win_handler(self, win):
+        """Add a windows handler to allow logging in the jd2chm UI (if available)."""
         self.win_handler = WinHandler(win)
         self.win_handler.setFormatter(self.formatter)
         self.logger.addHandler(self.win_handler)
 
-    def setLogFile(self, log_file):
+    def set_log_file(self, log_file):
         file_handler = logging.FileHandler(log_file)
         file_handler.setFormatter(self.formatter)
         self.logger.addHandler(file_handler)
 
-    def setLevel(self, level=2):
-        """level is between 0 and 5. In the module logging, we have: CRITICAL = 50,
-        ERROR = 40, WARNING = 30, INFO = 20, DEBUG = 10, NOTSET = 0.
-        """
+    def set_level(self, level=2):
+        """level is between 0 and 5: CRITICAL = 5, ERROR = 4, WARNING = 3, INFO = 2, DEBUG = 1, NOTSET = 0."""
+
         if level not in range(6):
-            level = 2
+            level = self.INFO
         self.logger.setLevel(level * 10)
 
-    def shutdown(self):
+    @staticmethod
+    def shutdown():
         logging.shutdown()

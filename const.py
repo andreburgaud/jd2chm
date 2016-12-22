@@ -8,15 +8,21 @@ REUSE_TEMP_FILES = 0
 
 MAX_SIZE_KEYWORD = 300
 
-# jdoc2chm version
-VERSION = "2.0b"
+# jd2chm version
+VERSION = "1.0.0b1"
 
 # Temporary working directory
 WORKING_DIR = "jd2chm"
 
+# Uses the HTML Help compiler installed via HTML Help Workshop (default)
+EXTERNAL_COMPILER = 1
+
+# CRITICAL = 5, ERROR = 4, WARNING = 3, INFO = 2, DEBUG = 1, NOTSET = 0.
+LOG_LEVEL = 2
+
 HTML_HELP_WSHOP_KEY = r"Software\Microsoft\HTML Help Workshop"
 
-MIT_LICENSE = """Copyright (c) 2002-2016 Andre Burgaud (http://www.burgaud.com)
+MIT_LICENSE = """Copyright (c) 2001-2016 Andre Burgaud (http://www.burgaud.com)
 
 Permission  is hereby granted, free of charge, to any person obtaining
 a copy  of  this  software  and  associated documentation  files  (the
@@ -39,11 +45,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."""
 
 USAGE = r"""Usage:
 
-  jd2chm.py [ -h | -c | -l | [-d dir] [-p project] [-t title] ]
+  jd2chm.py [ -h | -c | -l | [-d dir] [-p project] [-t title] [-v] ]
 
   -h: Displays usage.
   -c: Checks if the HHC compiler is installed.
   -l: Displays license.
+  -v: Verbose (displays debug information)
   -d dir: 'dir' is the directory containing a Javadoc
           documentation (default: current directory).
   -p name: the base name of the project files will be 'name'
@@ -61,7 +68,7 @@ jd2chm.py -d C:\beanshell\javadoc
   The user is prompted to possibly modify the default values for the
   project name and document title.
 
-jd2chm.py -d C:\beanshell\javadoc -p bsh20b4 -t "Beanshell 2.0b4"
+jd2chm.py -d C:\beanshell\javadoc -p bsh20b4 -t "Beanshell 2.0b4" -v
 
 jd2chm.py -d C:\j2se\docs\api -p j2se142_02 -t "Java(TM) 2 SDK 1.4.2"
 
@@ -102,7 +109,7 @@ Source code is available on GitHub: https://github.com/andreburgaud/jd2chm
 
 MSG_WELCOME = """
 jd2chm version %s
-Copyright (c) 2000-2016 Andre Burgaud
+Copyright (c) 2001-2016 Andre Burgaud
 http://www.burgaud.com/
 """
 
@@ -224,7 +231,7 @@ ABOUT_TEXT = """
 </font></tr></tr>
 <tr><td><center><br/>
 <font face="Microsoft Sans Serif" size="2">
-This HTML Help file<br/>was generated with Jd2chm version 2.0<br/>
+This HTML Help file<br/>was generated with Jd2chm version 1.0.0<br/>
 Copyright &copy; 2000-20016 <a href="mailto:andre@burgaud.com">Andre Burgaud</a><br/>
 <a href="http://www.burgaud.com/">http://www.burgaud.com</a></font><br/>&nbsp;
 </td></tr>

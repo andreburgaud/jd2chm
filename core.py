@@ -13,23 +13,10 @@ import win32api
 import win32con
 import pywintypes
 
-import jd2chm_const
-import jd2chm_utils
-
-try:
-    import pyhhc
-    EXTERNAL_COMPILER = 0
-except ImportError:
-    # TODO: Provide better information
-    # Set compiler to external and check if external compiler available
-    # Merge with information obtained in the configuration
-    print("Internal compiler not available")
-    EXTERNAL_COMPILER = 1
+import const
+import utils
 
 
-# ===============================================================================
-# CLASSES
-# ===============================================================================
 class Hhp:
     """Creates the HTML Help Project file (HHP file)
     """
@@ -38,7 +25,8 @@ class Hhp:
         self.project_name = project_name
         self.project_title = project_title
         self.default_file = default_file
-        self.log = jd2chm_utils.get_log()
+        self.log = utils.get_log()
+        self.hhp_file = None
 
     def create_hhp(self):
         hhp_file_name = self.project_name + ".hhp"
@@ -46,16 +34,16 @@ class Hhp:
 
         # Create the project file: .HHP
         self.hhp_file.write(
-            jd2chm_const.FORMAT_PROJECT % (self.project_name,  # chm name
-                                           self.project_name,  # hhc name (contents)
-                                           self.project_name,  # hhk name (index)
-                                           self.default_file,  # default topic
-                                           self.project_title,  # project title
-                                           self.project_title,  # main wnd title
-                                           self.project_name,  # hhc for wnd
-                                           self.project_name,  # hhk for wnd
-                                           self.default_file,  # default topic for wnd
-                                           self.default_file)  # home topic for wnd
+            const.FORMAT_PROJECT % (self.project_name,  # chm name
+                                    self.project_name,  # hhc name (contents)
+                                    self.project_name,  # hhk name (index)
+                                    self.default_file,  # default topic
+                                    self.project_title,  # project title
+                                    self.project_title,  # main wnd title
+                                    self.project_name,  # hhc for wnd
+                                    self.project_name,  # hhk for wnd
+                                    self.default_file,  # default topic for wnd
+                                    self.default_file)  # home topic for wnd
         )
         self.create_file_section()
         self.hhp_file.close()
@@ -81,44 +69,39 @@ class Hhc:
         self.hhc_file_name = project_name + ".hhc"
         self.content_file = content_file
         self.default_file = default_file
-        self.log = jd2chm_utils.get_log()
+        self.log = utils.get_log()
         # Regex to extract href and title for a book topic
         self.re_anchor_book = re.compile(r'^<li><a\shref="([^"]*)".*>(.*)</a></li>', re.I)
-        # Regex to extract href, type (interface or class), title for a page topic
-        # The attribute 'title' is new in Java 1.4 but for backward compatibility
-        # is not used in the regexp
-        # self.re_anchor_page = re.compile(r'^<A\s+HREF="([^"]*)"\s+title="(\w+)\s+.*">(?:<I>)?([^<]*)(?:</I>)?</A>')
-        #self.re_anchor_page = re.compile(r'^<li><a\shref="(.*)"[^>]*>(:?<span> class="interfaceName")?(.*)(:?</span>)?</a>', re.I)
         # Capture 3 groups if interface. Group 1 = url to class/interface. Group 2 flags if interface. Group 3 = title.
-        self.re_anchor_page = re.compile(r'^<li><a\shref="([^"]*)"[^<]*>([^>]*>)?([^>]*)(?:<\/span>)?<\/a><\/li>', re.I)
+        self.re_anchor_page = re.compile(r'^<li><a href="([^"]*)"[^<]*>([^>]*>)?([^>]*)(?:</span>)?</a></li>', re.I)
         # Regex to extract the url from the prefix "../"
         self.re_href = re.compile(r'(../)*(.*)')
         # Regex to extract inner class from class html file
-        # self.re_inner = re.compile(r'<TD>.*<A\s+HREF="([^"]*)"\s+title="(\w+)\s+.*">([^<]*)</A></B></CODE>')
         self.re_inner = re.compile(r'<td>.*<a\s+href="([^"]*)"[^>]*>([^<]*)</a></b></code>', re.I)
         # Regex to extract methods from class html file
         self.re_method = re.compile(r'<td><code><b><a\s+href="([^"]*)">([^<]*)</a></b>(\([^)]*\))?</code>', re.I)
         # Regex to extract the type and the variable of an 'anchored' argument
         self.re_args = re.compile(r'<a\s+href=[^>]*>([^<]*)</a>(.*;.*)', re.I)
+        self.hhc_file = None
 
     def create_hhc(self):
         self.hhc_file = open(self.hhc_file_name, 'w')
         str_time = time.strftime("%B-%d-%Y", time.localtime(time.time()))
-        self.hhc_file.write(jd2chm_const.FORMAT_TOC_HEADER % str_time)
+        self.hhc_file.write(const.FORMAT_TOC_HEADER % str_time)
         self.hhc_file.write('<ul>\n')
         if os.path.exists(self.default_file):
             title = "Overview"
-            self.hhc_file.write(jd2chm_const.FORMAT_CONTENT_CLASS_ITEM % (self.default_file, title))
-        if os.path.exists(jd2chm_const.OVERVIEW_TREE):
+            self.hhc_file.write(const.FORMAT_CONTENT_CLASS_ITEM % (self.default_file, title))
+        if os.path.exists(const.OVERVIEW_TREE):
             title = "Hierarchy For All Packages"
-            self.hhc_file.write(jd2chm_const.FORMAT_CONTENT_CLASS_ITEM % (jd2chm_const.OVERVIEW_TREE, title))
-        if self.content_file == jd2chm_const.JDK_BOOK_FILE:
+            self.hhc_file.write(const.FORMAT_CONTENT_CLASS_ITEM % (const.OVERVIEW_TREE, title))
+        if self.content_file == const.JDK_BOOK_FILE:
             # Content file is "overview-frame.html"
             self.create_packages(self.content_file)
         else:
             # Content file is "allclasses-frame.html"
-            # self.hhc_file.write(jd2chm_const.FORMAT_ALLCLASSES_CONTENT_ITEM % self.default_file)
-            self.hhc_file.write(jd2chm_const.FORMAT_ALLCLASSES_CONTENT_ITEM)
+            # self.hhc_file.write(const.FORMAT_ALLCLASSES_CONTENT_ITEM % self.default_file)
+            self.hhc_file.write(const.FORMAT_ALLCLASSES_CONTENT_ITEM)
             html_class = "allclasses-frame.html"
             if os.path.exists(html_class):
                 self.hhc_file.write('<ul>\n')
@@ -161,7 +144,7 @@ class Hhc:
                     path = ''  # Current path
                     html_class = "allclasses-frame.html"  # file that will be parsed to generate content topics
                 if os.path.exists(html_class):
-                    self.hhc_file.write(jd2chm_const.FORMAT_CONTENT_BOOK_ITEM % (title, html_package))
+                    self.hhc_file.write(const.FORMAT_CONTENT_BOOK_ITEM % (title, html_package))
                     self.hhc_file.write('<ul>\n')
                     self.create_classes(path, html_class, title)
                     self.hhc_file.write('</ul>\n')
@@ -184,7 +167,7 @@ class Hhc:
                 res = self.re_href.search(href)  # removes the prefix ../..
                 if res:
                     href = res.group(2)
-                self.hhc_file.write(jd2chm_const.FORMAT_CONTENT_CLASS_ITEM % (href, title))
+                self.hhc_file.write(const.FORMAT_CONTENT_CLASS_ITEM % (href, title))
                 if (os.path.exists(href)):
                     # We do not build the method level for the All Class book
                     self.hhc_file.write('<ul>\n')
@@ -193,14 +176,14 @@ class Hhc:
 
     def create_classes(self, path, html_file, package_name):
         """Parses package-frame.html file"""
-        package_tree_path = os.path.join(path, jd2chm_const.PACKAGE_TREE_HTML)
+        package_tree_path = os.path.join(path, const.PACKAGE_TREE_HTML)
         if os.path.exists(package_tree_path):
             title = "Hierarchy For Package %s" % package_name
-            self.hhc_file.write(jd2chm_const.FORMAT_CONTENT_CLASS_ITEM % (package_tree_path, title))
-        package_use_path = os.path.join(path, jd2chm_const.PACKAGE_USE)
+            self.hhc_file.write(const.FORMAT_CONTENT_CLASS_ITEM % (package_tree_path, title))
+        package_use_path = os.path.join(path, const.PACKAGE_USE)
         if os.path.exists(package_use_path):
             title = "Uses of Package %s" % package_name
-            self.hhc_file.write(jd2chm_const.FORMAT_CONTENT_CLASS_ITEM % (package_use_path, title))
+            self.hhc_file.write(const.FORMAT_CONTENT_CLASS_ITEM % (package_use_path, title))
         fo = open(html_file)
         lines = fo.readlines()
         fo.close()
@@ -212,7 +195,7 @@ class Hhc:
             res = self.re_anchor_page.match(line)
             if res:
                 href = res.group(1)  # url
-                if href.find(jd2chm_const.PACKAGE_SUMMARY) > 0:
+                if href.find(const.PACKAGE_SUMMARY) > 0:
                     # The package summary url is caught by the class regexp, skip
                     continue
                 title = res.group(3)  # title
@@ -228,7 +211,7 @@ class Hhc:
                 # Inner class handled in the class. Skipped if public static, and
                 # therefore visible in the package-frame file
                 if title.find('.') == -1:
-                    self.hhc_file.write(jd2chm_const.FORMAT_CONTENT_CLASS_ITEM % (href, title))
+                    self.hhc_file.write(const.FORMAT_CONTENT_CLASS_ITEM % (href, title))
                     if os.path.exists(href):
                         # We do not build the method level for the All Class book
                         self.hhc_file.write('<ul>\n')
@@ -273,7 +256,7 @@ class Hhc:
                 else:
                     args = ', '.join(new_args)
                 name = "%s (%s)" % (name, args)
-            self.hhc_file.write(jd2chm_const.FORMAT_CONTENT_METHOD_ITEM % (name, href))
+            self.hhc_file.write(const.FORMAT_CONTENT_METHOD_ITEM % (name, href))
 
 
 class Hhk:
@@ -295,12 +278,12 @@ class Hhk:
         # Regexp to eliminate the "../.." prefix
         self.re_href = re.compile(r'(../)*(.*)')
         self.cpt = 0
-        self.log = jd2chm_utils.get_log()
+        self.log = utils.get_log()
 
     def create_hhk(self):
         self.hhk_file = open(self.hhk_file_name, 'w')
         str_time = time.strftime("%B-%d-%Y", time.localtime(time.time()))
-        self.hhk_file.write(jd2chm_const.FORMAT_INDEX_HEADER % str_time)
+        self.hhk_file.write(const.FORMAT_INDEX_HEADER % str_time)
         self.hhk_file.write('<ul>\n')
         self.create_index()
         print()  # Add a CR after the dots
@@ -308,13 +291,13 @@ class Hhk:
         self.hhk_file.close()
 
     def create_index(self):
-        if os.path.exists(jd2chm_const.INDEX_ALL):
+        if os.path.exists(const.INDEX_ALL):
             # Javadoc generated with one unique index file in the main dir
-            self.parse_re_idxfile(jd2chm_const.INDEX_ALL)
+            self.parse_re_idxfile(const.INDEX_ALL)
         else:
             # Javadoc generated with splitted index files in the index dir
-            for index_file in os.listdir(jd2chm_const.INDEX_DIR):
-                index_file = '%s/%s' % (jd2chm_const.INDEX_DIR, index_file)
+            for index_file in os.listdir(const.INDEX_DIR):
+                index_file = '%s/%s' % (const.INDEX_DIR, index_file)
                 self.parse_re_idxfile(index_file)
 
     @staticmethod
@@ -322,8 +305,8 @@ class Hhk:
         """During the compilation, any keyword with more than 488 triggers and error from the CHM compiler:
         Warning: Keyword string: ... The maximum is 488 characters
         """
-        if len(title) > jd2chm_const.MAX_SIZE_KEYWORD:
-            return title[:jd2chm_const.MAX_SIZE_KEYWORD] + "..."
+        if len(title) > const.MAX_SIZE_KEYWORD:
+            return title[:const.MAX_SIZE_KEYWORD] + "..."
         return title
 
     def parse_re_idxfile(self, index_file):
@@ -345,7 +328,7 @@ class Hhk:
             if res_class:
                 java_class = res_class.group(1)
                 java_class = java_class.replace('/', '.')  # substitute / separator by .
-            if len(href) < jd2chm_const.MAX_SIZE_KEYWORD and len(title) < jd2chm_const.MAX_SIZE_KEYWORD:
+            if len(href) < const.MAX_SIZE_KEYWORD and len(title) < const.MAX_SIZE_KEYWORD:
                 # Too long href or title causes the HHC compiler too crash (example with createArray method in Groovy).
                 # It is better to simply skip those exceptional cases.
                 self.write_index(href, self.sanitize_title(title), java_class)
@@ -356,14 +339,14 @@ class Hhk:
         if self.kword and self.kword != title:
             if len(self.entries) == 1:
                 # only one item, no need for sub-entries in the index
-                self.hhk_file.write(jd2chm_const.FORMAT_INDEX_ITEM % (self.entries[0][0], self.kword))
+                self.hhk_file.write(const.FORMAT_INDEX_ITEM % (self.entries[0][0], self.kword))
             else:
                 # Multiple entries so subindex for the same kword
-                self.hhk_file.write(jd2chm_const.FORMAT_INDEX_KEYWORD % (self.kword, self.kword))
+                self.hhk_file.write(const.FORMAT_INDEX_KEYWORD % (self.kword, self.kword))
                 self.hhk_file.write('<ul>\n')
                 for entry in self.entries:
                     # entry[0] is href, entry[1] is java_class
-                    self.hhk_file.write(jd2chm_const.FORMAT_INDEX_ITEM % (entry[0], "in " + entry[1]))
+                    self.hhk_file.write(const.FORMAT_INDEX_ITEM % (entry[0], "in " + entry[1]))
                 self.hhk_file.write('</ul>\n')
             self.kword = title
             self.entries = []
@@ -379,7 +362,7 @@ class ChmProject:
     def __init__(self):
         self.content_file = ''
         self.default_file = ''
-        self.log = jd2chm_utils.get_log()
+        self.log = utils.get_log()
 
     def parse_re_index_html(self):
         """Parses index.html file to retrieve the files to be parsed in order to create
@@ -393,7 +376,7 @@ class ChmProject:
         Takes the attribute src in the 1st tag <FRAME>, "allclasses-frame.html" and
         in the 2nd tag <FRAME>, example: "com/sun/javadoc/package-summary.html"
         """
-        fo = open(jd2chm_const.INDEX_HTML)
+        fo = open(const.INDEX_HTML)
         lines = fo.readlines()
         fo.close()
         self.re_src = re.compile(r'^<frame src="([^"]*)"')
@@ -434,15 +417,22 @@ class ChmEnv:
     """
 
     def __init__(self):
-        self.log = jd2chm_utils.get_log()
+        self.log = utils.get_log()
+        self.html_compiler = None
+        self.project_name = None
+        self.start_dir = None
+        self.temp_dir = None
+
+        # Regex
+        self.re_method = None
+        self.re_bookmark = None
 
     def prepare_env(self, project_name, jdoc_dir):
         self.project_name = project_name
         self.start_dir = os.getcwd()
 
-        if EXTERNAL_COMPILER:
-            # If HH Compiler not installed, it prompts
-            # the user and stops
+        if const.EXTERNAL_COMPILER:
+            # If HH Compiler not installed, it prompts the user and stops
             self.html_compiler = self.get_html_compiler_path()
         else:
             self.log.info('Using internal compiler (module pyhhc)')
@@ -465,12 +455,13 @@ class ChmEnv:
         self.temp_dir = self.copy_javadoc(jdoc_dir)
         # Working directory becomes current dir
         os.chdir(self.temp_dir)
-        # Modifiy files (URL clean-up)
+        # Modify files (URL clean-up)
+        # TODO: this regex is not working with recent Javadoc. Revisit the cleanup concept
         self.re_method = re.compile(r'<td><code><b><a\s+href="([^"]*)">')
         self.re_bookmark = re.compile(r'<a name="([^"]*)">')
         self.clean_html_files()
         # Create CSS file
-        if jd2chm_const.CUSTOM_CSS:
+        if const.CUSTOM_CSS:
             self.create_css()
         # Create about file
         create_about()
@@ -484,7 +475,7 @@ class ChmEnv:
         if not os.path.exists(hhc_path):
             hhc_path = None
             try:
-                hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, jd2chm_const.HTML_HELP_WSHOP_KEY)
+                hkey = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, const.HTML_HELP_WSHOP_KEY)
                 data, key_type = win32api.RegQueryValueEx(hkey, "InstallDir")
                 win32api.RegCloseKey(hkey)
             except pywintypes.error:
@@ -504,23 +495,17 @@ class ChmEnv:
         return hhc_path
 
     def make(self, handle=0):
-        # Copy the generated files in the starting dir
-        # for file in glob.glob("%s.hh?" % project_name):
-        #  print "Copy:", file
-        #  shutil.copyfile(file, os.path.join(start_dir, file))
-
-        if EXTERNAL_COMPILER:
-            # Call the compiler
+        if const.EXTERNAL_COMPILER:
             compiler = win32api.GetShortPathName(self.html_compiler)
             self.log.info('HTML Help Compilation (Microsoft HTML Help compiler)')
             if handle:
-                # TODO: Start compilation in a thread
+                # TODO: Start compilation in a thread (only for UI if any)
                 os.system('%s %s.hhp' % (compiler, self.project_name))
             else:
                 os.system('%s %s.hhp' % (compiler, self.project_name))
         else:
-            self.log.info('Compiling %s' % self.project_name)
-            pyhhc.compileHHP('%s.hhp' % self.project_name)
+            self.log.error('Only the external compiler, HHC.exe, can be used with this version of jd2chm')
+            sys.exit(1)
 
         # Copy back the compiled chm file (if any)
         chm = '%s.chm' % self.project_name
@@ -533,19 +518,12 @@ class ChmEnv:
         # Could be needed to start the chm for example
         os.chdir(self.start_dir)
 
-        # ~ def delete_work_dir(self, dir):
-        # ~ # TODO: seems to take some time with the JDK
-        # ~ # a os.system("delete %s" % dir), though not elegant could
-        # ~ # improve the performance. To be tested
-        # ~ if os.path.isdir(dir):
-        # ~ shutil.rmtree(dir)
-
     def copy_javadoc(self, jdoc_dir):
         """Copy the current tree into the temporary working directory"""
         tmp_dir = tempfile.gettempdir()
-        tmp_dir = os.path.join(tmp_dir, jd2chm_const.WORKING_DIR, self.project_name)
+        tmp_dir = os.path.join(tmp_dir, const.WORKING_DIR, self.project_name)
 
-        if not jd2chm_const.REUSE_TEMP_FILES:
+        if not const.REUSE_TEMP_FILES:
             if os.path.isdir(tmp_dir):
                 self.log.info("Deleting old directory %s" % tmp_dir)
                 try:
@@ -557,8 +535,8 @@ class ChmEnv:
             while True:
                 try:
                     cpt += 1
-                    self.log.info("Copying Javadoc files to {}.".format(tmp_dir))
-                    self.log.info("It may take a while for a large size Java Documentation.")
+                    self.log.info("Copying Javadoc files to {}".format(tmp_dir))
+                    self.log.warning("It may take a while for a large size Java Documentation")
                     shutil.copytree(jdoc_dir, tmp_dir)
                     break
                 except PermissionError as pe:
@@ -571,40 +549,41 @@ class ChmEnv:
         return tmp_dir
 
     def clean_html_files(self):
+        # TODO: validate if this is still necessary with recent Javadoc
         # Assume current directory
-        os.walk('.', self.clean_html, None)
-
-    def clean_html(self, junk, dirname, names):
-        del junk  # We don't use it. Eliminate warning in PyChecker
-        for html_file in names:
-            if os.path.splitext(html_file)[1] == ".html":
-                lines_modified = 0
-                new_lines = []
-                html_dir = os.path.abspath(dirname)
-                path = os.path.join(html_dir, html_file)
-                fo = open(path)
-                lines = fo.readlines()
-                fo.close()
-                for line in lines:
-                    # Check link method
-                    new_line = self.quote_url(self.re_method, line)
-                    if new_line:
-                        line = new_line
-                        lines_modified += 1
-                        new_lines.append(line)
-                        # Should not have the link and anchor on the same line
-                        continue
-                    # Check bookmark method
-                    new_line = self.quote_url(self.re_bookmark, line)
-                    if new_line:
-                        line = new_line
-                        lines_modified += 1
-                    new_lines.append(line)
-                if lines_modified:
-                    self.log.info('%s: %s lines modified' % (html_file, lines_modified))
-                    fo = open(path, "w")
-                    fo.writelines(new_lines)
+        self.log.debug('trigger cleanup...')
+        for root, dirs, files in os.walk('.'):
+            for file in files:
+                if os.path.splitext(file)[1] == ".html":
+                    lines_modified = 0
+                    new_lines = []
+                    html_dir = os.path.abspath(root)
+                    path = os.path.join(html_dir, file)
+                    fo = open(path)
+                    lines = fo.readlines()
                     fo.close()
+                    for line in lines:
+                        # Check link method
+                        new_line = self.quote_url(self.re_method, line)
+                        if new_line:
+                            line = new_line
+                            lines_modified += 1
+                            new_lines.append(line)
+                            # Should not have the link and anchor on the same line
+                            continue
+                        # Check bookmark method
+                        new_line = self.quote_url(self.re_bookmark, line)
+                        if new_line:
+                            line = new_line
+                            lines_modified += 1
+                        new_lines.append(line)
+                    if lines_modified:
+                        self.log.warning('%s: %s lines modified' % (file, lines_modified))
+                        fo = open(path, "w")
+                        fo.writelines(new_lines)
+                        fo.close()
+                    else:
+                        self.log.debug('%s: %s lines modified' % (file, lines_modified))
 
     def quote_url(self, regex, line):
         match = regex.search(line)
@@ -625,21 +604,21 @@ class ChmEnv:
         saves the original Javadoc css file (stylesheet.css) unless already saved.
         """
 
-        css_file_bak = jd2chm_const.CSS_FILE_NAME + ".bak"
-        if os.path.exists(jd2chm_const.CSS_FILE_NAME):
+        css_file_bak = const.CSS_FILE_NAME + ".bak"
+        if os.path.exists(const.CSS_FILE_NAME):
             if not os.path.exists(css_file_bak):
-                self.log.info(
-                    "Saves the original Javadoc css file (%s) as %s" % (jd2chm_const.CSS_FILE_NAME, css_file_bak))
-                shutil.copyfile(jd2chm_const.CSS_FILE_NAME, jd2chm_const.CSS_FILE_NAME + ".bak")
-        css_file = open(jd2chm_const.CSS_FILE_NAME, 'w')
-        css_file.write(jd2chm_const.FORMAT_CSS)
+                self.log.info("Saves the original Javadoc css file ({}) as {}".format(const.CSS_FILE_NAME,
+                                                                                      css_file_bak))
+                shutil.copyfile(const.CSS_FILE_NAME, const.CSS_FILE_NAME + ".bak")
+        css_file = open(const.CSS_FILE_NAME, 'w')
+        css_file.write(const.FORMAT_CSS)
         css_file.close()
 
 
 def create_about():
     """Creates an HTML about file to be included in the project."""
-    about_file = open(jd2chm_const.ABOUT_FILE, 'w')
-    about_file.write(jd2chm_const.ABOUT_TEXT)
+    about_file = open(const.ABOUT_FILE, 'w')
+    about_file.write(const.ABOUT_TEXT)
     about_file.close()
 
 
@@ -652,7 +631,7 @@ def walktree(folder, callback):
 
     # debug("[walktree] Directory: %s" % dir)
     sys.stdout.write('.')
-    if folder == './' + jd2chm_const.INDEX_DIR:
+    if folder == './' + const.INDEX_DIR:
         print()  # Carriage return after the dots...
         print("Skipping %s" % folder)
         return

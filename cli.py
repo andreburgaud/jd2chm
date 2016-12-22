@@ -7,10 +7,10 @@ import os
 import getopt
 import re
 
-import jd2chm_utils as utils
-import jd2chm_const as const
-import jd2chm_core
-import lib_console as console
+import utils
+import const
+import core
+import console
 
 
 def usage():
@@ -80,7 +80,7 @@ def main():
 
     # Arguments processing
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hcld:p:t:")
+        opts, args = getopt.getopt(sys.argv[1:], "hclvd:p:t:")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -89,14 +89,15 @@ def main():
     project_title = None
     start_dir = os.getcwd()
     javadoc_dir = '.'
-    log = utils.get_log()
+    logging = utils.get_logging(const.LOG_LEVEL)
+    log = logging.logger
 
     for o, a in opts:
         if o == "-h":
             usage()
             sys.exit()
         if o == "-c":  # Check HHC compiler
-            env = jd2chm_core.ChmEnv()
+            env = core.ChmEnv()
             hhc = env.get_html_compiler_path()
             log.info("HTML Help Compiler installed and found: %s" % hhc)
             sys.exit()
@@ -109,6 +110,8 @@ def main():
             project_title = a
         if o == "-d":
             javadoc_dir = a
+        if o == "-v": # verbose (debug = level)
+            logging.set_level(logging.DEBUG)
 
     index_html = get_index_html(javadoc_dir)
     if not index_html:
@@ -146,11 +149,11 @@ def main():
     os.chdir(javadoc_dir)
 
     # Prepare Environment
-    env = jd2chm_core.ChmEnv()
+    env = core.ChmEnv()
     env.prepare_env(project_name, javadoc_dir)
 
     # Create HTML help files
-    project = jd2chm_core.ChmProject()
+    project = core.ChmProject()
     project.create_project(project_name, project_title)
 
     # Generate the CHM and clean-up
@@ -160,4 +163,3 @@ def main():
     log.info('Compilation completed')
     os.chdir(start_dir)
     thanks()
-

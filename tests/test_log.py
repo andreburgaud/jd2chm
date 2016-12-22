@@ -7,10 +7,11 @@ import sys
 import logging  # To display the logging values
 
 sys.path.insert(0, os.path.abspath('.'))
-import jd2chm_utils as utils
+import utils
 
 
 def print_logs(logger, level):
+    print("Testing log level: {}".format(level))
     logger.debug('Testing debug ({})'.format(logging.DEBUG))
     logger.info('Testing info ({})'.format(logging.INFO))
     logger.warning('Testing warning ({})'.format(logging.WARNING))
@@ -22,7 +23,7 @@ def test_logs():
     test_logging = utils.get_logging(1)
     logger = test_logging.logger
     for level in range(6):
-        test_logging.setLevel(level)
+        test_logging.set_level(level)
         print_logs(logger, level)
     test_logging.shutdown()
 
