@@ -53,16 +53,27 @@ def set_bright_color(color=0):
 
 
 def style(color=0, bright=False):
+    """Returns function that returns decorator. This allows to mimic a decorator that takes parameters
+    Wrapped function may take parameters or no paramters"""
     def decor_set_color(func):
-        def wrapper():
+        def wrapper(args=None):
             if bright:
                 SetConsoleTextAttribute(h_stdout, color | FOREGROUND_INTENSITY)
             else:
                 SetConsoleTextAttribute(h_stdout, color)
-            func()
+            if args:
+                func(args)
+            else:
+                func()
             if bright:
                 SetConsoleTextAttribute(h_stdout, DEFAULT_COLOR | FOREGROUND_INTENSITY)
             else:
                 SetConsoleTextAttribute(h_stdout, DEFAULT_COLOR)
         return wrapper
     return decor_set_color
+
+
+@style(color=FOREGROUND_RED, bright=True)
+def print_error(msg):
+    """Print error with coloring based on the style."""
+    print(msg)

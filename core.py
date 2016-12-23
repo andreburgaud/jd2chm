@@ -34,16 +34,16 @@ class Hhp:
 
         # Create the project file: .HHP
         self.hhp_file.write(
-            const.FORMAT_PROJECT % (self.project_name,  # chm name
-                                    self.project_name,  # hhc name (contents)
-                                    self.project_name,  # hhk name (index)
-                                    self.default_file,  # default topic
+            const.FORMAT_PROJECT % (self.project_name,   # chm name
+                                    self.project_name,   # hhc name (contents)
+                                    self.project_name,   # hhk name (index)
+                                    self.default_file,   # default topic
                                     self.project_title,  # project title
                                     self.project_title,  # main wnd title
-                                    self.project_name,  # hhc for wnd
-                                    self.project_name,  # hhk for wnd
-                                    self.default_file,  # default topic for wnd
-                                    self.default_file)  # home topic for wnd
+                                    self.project_name,   # hhc for wnd
+                                    self.project_name,   # hhk for wnd
+                                    self.default_file,   # default topic for wnd
+                                    self.default_file)   # home topic for wnd
         )
         self.create_file_section()
         self.hhp_file.close()

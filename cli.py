@@ -12,6 +12,9 @@ import const
 import core
 import console
 
+logging = utils.get_logging(const.LOG_LEVEL)
+log = logging.logger
+
 
 def usage():
     """Display Usage."""
@@ -42,6 +45,7 @@ def welcome():
 
 def get_title(index_html):
     """Extracts the default title from the root Javadoc index.html file."""
+    log.debug(os.path.abspath(index_html))
     title = 'Javadoc Title'
     re_title = re.compile(r'<title>\s*([^<]*)\s*</title>')
     fo = open(index_html)
@@ -63,14 +67,14 @@ def get_project_name(title):
 
 
 def get_index_html(javadoc_dir):
-    """Checks and returns the index.html path."""
-    # TODO: Check if directory exists and provide a different message (directory does not exist vs.
-    # there is no index.html)
+    """Checks and returns the index.html path if found. Otherwise returns None."""
+    if not os.path.exists(javadoc_dir):
+        console.print_error(const.NOT_DIR_MESSAGE.format(javadoc_dir))
+        return None
+
     index_html = os.path.join(javadoc_dir, const.INDEX_HTML)
     if not os.path.exists(index_html):
-        console.set_bright_color(console.FOREGROUND_RED)
-        print(const.NOT_JAVADOC_DIR_MESSAGE % (javadoc_dir, index_html))
-        console.set_color()
+        console.print_error(const.NOT_JAVADOC_DIR_MESSAGE.format(javadoc_dir, index_html))
         return None
     return index_html
 
@@ -80,7 +84,7 @@ def main():
 
     # Arguments processing
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hclvd:p:t:")
+        opts, args = getopt.getopt(sys.argv[1:], "hclvp:o:t:")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -89,8 +93,6 @@ def main():
     project_title = None
     start_dir = os.getcwd()
     javadoc_dir = '.'
-    logging = utils.get_logging(const.LOG_LEVEL)
-    log = logging.logger
 
     for o, a in opts:
         if o == "-h":
@@ -104,11 +106,14 @@ def main():
         if o == "-l":
             lic()
             sys.exit()
-        if o == "-p":
+        if o == "-o":
+            # output: example 'beanshell' will give 'beanshell.chm'
             project_name = a
         if o == "-t":
+            # Title that will show up as the title of the CHM Window
             project_title = a
-        if o == "-d":
+        if o == "-p":
+            # Path containing a Javadoc documentation (there should be an index.html in that path)
             javadoc_dir = a
         if o == "-v": # verbose (debug = level)
             logging.set_level(logging.DEBUG)

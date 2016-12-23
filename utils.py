@@ -15,6 +15,7 @@ def get_app_dir():
 
 
 def get_logging(level=2):
+    """Return the singleton logging."""
     global logging
     if not logging:
         logging = log.Jd2chmLogging(level)
@@ -27,6 +28,7 @@ def get_log(level=2):
 
 
 def term_width():
+    """Return the width of the terminal."""
     return shutil.get_terminal_size((const.DEFAULT_TERM_WIDTH,
                                      const.DEFAULT_TERM_HEIGHT)).columns - const.TERM_MARGIN
 

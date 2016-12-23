@@ -45,43 +45,50 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."""
 
 USAGE = r"""Usage:
 
-  jd2chm.py [ -h | -c | -l | [-d dir] [-p project] [-t title] [-v] ]
+  jd2chm [ -h | -c | -l | [-p path] [-o output] [-t title] [-v] ]
 
   -h: Displays usage.
   -c: Checks if the HHC compiler is installed.
   -l: Displays license.
   -v: Verbose (displays debug information)
-  -d dir: 'dir' is the directory containing a Javadoc
-          documentation (default: current directory).
-  -p name: the base name of the project files will be 'name'
-           (project_name.hhp, project_name.chm...).
-  -t title: Assign 'title' as the title of the project.
+  -p path:   'path' is the path of a  directory containing a Javadoc
+             documentation (default: current directory).
+  -o output: base name of the CHM output file
+             Ex: -o 'product' will result in a CHM file named 'product.chm'.
+  -t title:  Assign 'title' as the title of the project.
 
 Notes:
-- The user is prompted if the project name and document title are not
+- The user is prompted if the output and document title are not
   provided at the command line. The default values are extracted from
   the Javadoc index.html (see examples below).
-- The Javadoc directory is the directory containing the file index.html.
+- The Javadoc path is the path containing the file index.html.
 
 Examples:
-jd2chm.py -d C:\beanshell\javadoc
+jd2chm.py -p C:\beanshell\javadoc
   The user is prompted to possibly modify the default values for the
   project name and document title.
 
-jd2chm.py -d C:\beanshell\javadoc -p bsh20b4 -t "Beanshell 2.0b4" -v
+jd2chm.py -p C:\beanshell\javadoc -o bsh20b4 -t "Beanshell 2.0b4" -v
 
-jd2chm.py -d C:\j2se\docs\api -p j2se142_02 -t "Java(TM) 2 SDK 1.4.2"
+jd2chm.py -p C:\j2se\docs\api -o j2se142_02 -t "Java(TM) 2 SDK 1.4.2"
 
-jd2chm.py -p jython21 -t "Jython 2.1"
+jd2chm.py -o jython21 -t "Jython 2.1"
   The Javadoc is assumed to be in the current directory.
 
-jd2chm.py -p SWT30M7 -t "Standard Widget toolkit 3.0M7"
+jd2chm.py -o SWT30M7 -t "Standard Widget toolkit 3.0M7"
   The Javadoc is assumed to be in the current directory."""
 
 NOT_JAVADOC_DIR_MESSAGE = """\
-The directory '%s' is not a Javadoc directory (%s not found).
+The directory '{}' is not a Javadoc directory (%s not found).
 Run jd2chm from a directory that contains a generated Javadoc documentation,
-or use the parameter -d to provide a Javadoc directory at the command line.
+or use the parameter -p to provide the path of a Javadoc directory.
+
+To display additional help, run jd2chm -h"""
+
+NOT_DIR_MESSAGE = """\
+Directory '{}' not found.
+Run jd2chm from a directory that contains a generated Javadoc documentation,
+or use the parameter -p to provide the path of a Javadoc directory.
 
 To display additional help, run jd2chm -h"""
 
