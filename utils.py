@@ -39,7 +39,6 @@ def center(line, max_line=0):
     If max_line is provided for justified text, line shorter than max_line
     will only be padded on the left side.
     """
-
     width = term_width()
     left_margin = (width - max_line) / 2
     if len(line) < max_line:
@@ -49,6 +48,5 @@ def center(line, max_line=0):
 
 def print_center_block(text, max_line=0):
     """Print a block of text centered on the terminal."""
-
     for line in text.split('\n'):
         print(center(line, max_line))

@@ -16,25 +16,22 @@ logging = utils.get_logging(const.LOG_LEVEL)
 log = logging.logger
 
 
+@console.style(console.default().foreground, console.BRIGHT)
 def usage():
     """Display Usage."""
-    console.set_bright_color()
     print(const.USAGE)
-    console.set_color()
 
 
+@console.style(console.FOREGROUND_YELLOW)
 def lic():
     """Display License."""
-    console.set_color(console.FOREGROUND_YELLOW)
     utils.print_center_block(const.MIT_LICENSE, 70)
-    console.set_color()
 
 
+@console.style(console.FOREGROUND_GREEN)
 def thanks():
     """Display thank you message."""
-    console.set_color(console.FOREGROUND_GREEN)
     utils.print_center_block(const.MSG_THANKS)
-    console.set_color()
 
 
 @console.style(console.FOREGROUND_GREEN)
@@ -79,12 +76,12 @@ def get_index_html(javadoc_dir):
     return index_html
 
 
-def main():
+def main(args):
     welcome()
 
     # Arguments processing
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hclvp:o:t:")
+        opts, args = getopt.getopt(args, "hclvp:o:t:")
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -104,6 +101,7 @@ def main():
             log.info("HTML Help Compiler installed and found: %s" % hhc)
             sys.exit()
         if o == "-l":
+            # Shows license
             lic()
             sys.exit()
         if o == "-o":
@@ -115,9 +113,11 @@ def main():
         if o == "-p":
             # Path containing a Javadoc documentation (there should be an index.html in that path)
             javadoc_dir = a
-        if o == "-v": # verbose (debug = level)
+        if o == "-v":
+            # verbose (debug = level)
             logging.set_level(logging.DEBUG)
 
+    log.debug(args)
     index_html = get_index_html(javadoc_dir)
     if not index_html:
         sys.exit(1)

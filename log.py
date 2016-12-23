@@ -45,7 +45,6 @@ class Jd2chmLogging:
 
     def __init__(self, level=INFO):
         self.logger = logging.getLogger('jd2chm')
-        # self.formatter = logging.Formatter('[%(asctime)s] %(levelname)-8s %(message)s')
         self.formatter = logging.Formatter('[%(asctime)s] %(message)s', '%Y-%m-%d %H:%M:%S')
         self.set_level(level)
         # self.stream_handler = logging.StreamHandler()
@@ -67,7 +66,6 @@ class Jd2chmLogging:
 
     def set_level(self, level=2):
         """level is between 0 and 5: CRITICAL = 5, ERROR = 4, WARNING = 3, INFO = 2, DEBUG = 1, NOTSET = 0."""
-
         if level not in range(6):
             level = self.INFO
         self.logger.setLevel(level * 10)
