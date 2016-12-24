@@ -17,9 +17,6 @@ WORKING_DIR = "jd2chm"
 # Uses the HTML Help compiler installed via HTML Help Workshop (default)
 EXTERNAL_COMPILER = 1
 
-# CRITICAL = 5, ERROR = 4, WARNING = 3, INFO = 2, DEBUG = 1, NOTSET = 0.
-LOG_LEVEL = 2
-
 HTML_HELP_WSHOP_KEY = r"Software\Microsoft\HTML Help Workshop"
 
 MIT_LICENSE = """Copyright (c) 2001-2016 Andre Burgaud (http://www.burgaud.com)

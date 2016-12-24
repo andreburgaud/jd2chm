@@ -5,6 +5,9 @@ Logging class for jd2chm
 import logging
 import console
 
+# CRITICAL = 5, ERROR = 4, WARNING = 3, INFO = 2, DEBUG = 1, NOTSET = 0.
+DEFAULT_LOG_LEVEL = 2
+
 
 class WinHandler(logging.Handler):
     """EditCtrl Handler (for jd2chm UI, if available)"""
@@ -27,7 +30,7 @@ class ColorHandler(logging.StreamHandler):
 
     def emit(self, record):
         if record.levelno == logging.DEBUG:
-            console.set_color(console.FOREGROUND_GREEN)
+            console.set_color(console.FOREGROUND_MAGENTA)
         if record.levelno == logging.WARNING:
             console.set_color(console.FOREGROUND_YELLOW)
         if record.levelno == logging.ERROR:
@@ -73,3 +76,18 @@ class Jd2chmLogging:
     @staticmethod
     def shutdown():
         logging.shutdown()
+
+_logging = None
+
+
+def get_logging(level=2):
+    """Return the singleton logging."""
+    global _logging
+    if not _logging:
+        _logging = Jd2chmLogging(level)
+    return _logging
+
+
+def get_logger(level=2):
+    """Facilitate sharing the logger across the different modules."""
+    return get_logging(level=2).logger

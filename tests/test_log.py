@@ -7,7 +7,7 @@ import sys
 import logging  # To display the logging values
 
 sys.path.insert(0, os.path.abspath('.'))
-import utils
+import log
 
 
 def print_logs(logger, level):
@@ -20,12 +20,18 @@ def print_logs(logger, level):
 
 
 def test_logs():
-    test_logging = utils.get_logging(1)
-    logger = test_logging.logger
+    test_logging = log.get_logging()
+    logger = log.get_logger()
     for level in range(6):
         test_logging.set_level(level)
         print_logs(logger, level)
     test_logging.shutdown()
+
+
+def test_singleton():
+    logger1 = log.get_logger()
+    logger2 = log.get_logger()
+    assert logger1 == logger2
 
 if __name__ == '__main__':
     test_logs()

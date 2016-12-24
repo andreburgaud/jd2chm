@@ -2,7 +2,12 @@
 Exposes methods to change the color of the output in a console (Windows specific).
 """
 import collections
+import shutil
 from ctypes import windll, Structure, c_short, c_ushort, byref
+
+DEFAULT_TERM_WIDTH = 80
+DEFAULT_TERM_HEIGHT = 40
+TERM_MARGIN = 10
 
 SHORT = c_short
 WORD = c_ushort
@@ -95,7 +100,7 @@ def get_text_attr():
 def set_color(color=0):
     """Set a color (non bright)"""
     if color:
-        SetConsoleTextAttribute(h_stdout, color | default().background )
+        SetConsoleTextAttribute(h_stdout, color | default().background)
     else:
         SetConsoleTextAttribute(h_stdout, default().colors)
 
@@ -130,3 +135,28 @@ def style(color=0, bright=False):
 def print_error(msg):
     """Print error with coloring based on the style."""
     print(msg)
+
+
+def term_width():
+    """Return the width of the terminal."""
+    return shutil.get_terminal_size((DEFAULT_TERM_WIDTH,
+                                     DEFAULT_TERM_HEIGHT)).columns - TERM_MARGIN
+
+
+def center(line, max_line=0):
+    """Center a padded string based on the width of the terminal.
+
+    If max_line is provided for justified text, line shorter than max_line
+    will only be padded on the left side.
+    """
+    width = term_width()
+    left_margin = (width - max_line) / 2
+    if len(line) < max_line:
+        return (' ' * int(left_margin)) + line
+    return line.center(width, ' ')
+
+
+def print_center_block(text, max_line=0):
+    """Print a block of text centered on the terminal."""
+    for line in text.split('\n'):
+        print(center(line, max_line))

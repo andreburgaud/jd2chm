@@ -14,7 +14,7 @@ import win32con
 import pywintypes
 
 import const
-import utils
+import log as log_
 
 
 class Hhp:
@@ -25,7 +25,7 @@ class Hhp:
         self.project_name = project_name
         self.project_title = project_title
         self.default_file = default_file
-        self.log = utils.get_log()
+        self.log = log_.get_logger()
         self.hhp_file = None
 
     def create_hhp(self):
@@ -69,7 +69,7 @@ class Hhc:
         self.hhc_file_name = project_name + ".hhc"
         self.content_file = content_file
         self.default_file = default_file
-        self.log = utils.get_log()
+        self.log = log_.get_logger()
         # Regex to extract href and title for a book topic
         self.re_anchor_book = re.compile(r'^<li><a\shref="([^"]*)".*>(.*)</a></li>', re.I)
         # Capture 3 groups if interface. Group 1 = url to class/interface. Group 2 flags if interface. Group 3 = title.
@@ -278,7 +278,7 @@ class Hhk:
         # Regexp to eliminate the "../.." prefix
         self.re_href = re.compile(r'(../)*(.*)')
         self.cpt = 0
-        self.log = utils.get_log()
+        self.log = log_.get_logger()
 
     def create_hhk(self):
         self.hhk_file = open(self.hhk_file_name, 'w')
@@ -362,7 +362,7 @@ class ChmProject:
     def __init__(self):
         self.content_file = ''
         self.default_file = ''
-        self.log = utils.get_log()
+        self.log = log_.get_logger()
 
     def parse_re_index_html(self):
         """Parses index.html file to retrieve the files to be parsed in order to create
@@ -417,7 +417,7 @@ class ChmEnv:
     """
 
     def __init__(self):
-        self.log = utils.get_log()
+        self.log = log_.get_logger()
         self.html_compiler = None
         self.project_name = None
         self.start_dir = None

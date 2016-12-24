@@ -7,13 +7,13 @@ import os
 import getopt
 import re
 
-import utils
+import log as log_
 import const
 import core
 import console
 
-logging = utils.get_logging(const.LOG_LEVEL)
-log = logging.logger
+logging = log_.get_logging()
+log = log_.get_logger()
 
 
 @console.style(console.default().foreground, console.BRIGHT)
@@ -25,19 +25,19 @@ def usage():
 @console.style(console.FOREGROUND_YELLOW)
 def lic():
     """Display License."""
-    utils.print_center_block(const.MIT_LICENSE, 70)
+    console.print_center_block(const.MIT_LICENSE, 70)
 
 
 @console.style(console.FOREGROUND_GREEN)
 def thanks():
     """Display thank you message."""
-    utils.print_center_block(const.MSG_THANKS)
+    console.print_center_block(const.MSG_THANKS)
 
 
 @console.style(console.FOREGROUND_GREEN)
 def welcome():
     """Display welcome message."""
-    utils.print_center_block(const.MSG_WELCOME % const.VERSION)
+    console.print_center_block(const.MSG_WELCOME % const.VERSION)
 
 
 def get_title(index_html):
