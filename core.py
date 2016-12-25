@@ -55,7 +55,7 @@ class Hhp:
 
     def write_file_section(self, html_file_path):
         """Writes only if '.html' files.
-        Doesn't write the './' at the begining of the path"""
+        Doesn't write the './' at the beginning of the path"""
         if html_file_path[html_file_path.rfind('.'):] == '.html':
             self.hhp_file.write(html_file_path[2:] + '\n')
 
@@ -357,7 +357,7 @@ class Hhk:
 
 
 class ChmProject:
-    """Main class"""
+    """Create the HTML Help project file (extension .hhp)"""
 
     def __init__(self):
         self.content_file = ''
@@ -368,13 +368,15 @@ class ChmProject:
         """Parses index.html file to retrieve the files to be parsed in order to create
         the contents table and to set the default page
 
-        JavaDoc with multiple packages:
-        Takes the attribute src in the 1st tag <FRAME>, "overview-frame.html" and in
-        the 3rd tag <FRAME>, "overview-summary.html"
+        1) JavaDoc with multiple packages (JDK, :
+        Takes the attribute src in the 1st tag <frame>, "overview-frame.html" and in
+        the 3rd tag <frame>, "overview-summary.html"
 
-        JavaDoc with one package:
-        Takes the attribute src in the 1st tag <FRAME>, "allclasses-frame.html" and
-        in the 2nd tag <FRAME>, example: "com/sun/javadoc/package-summary.html"
+        2) JavaDoc with one package (example BeanShell):
+        Takes the attribute src in the 1st tag <frame>, "allclasses-frame.html" and
+        in the 2nd tag <frame>, example: "bsh/package-summary.html"
+
+        3) JavaDoc with no package?
         """
         fo = open(const.INDEX_HTML)
         lines = fo.readlines()
@@ -389,6 +391,7 @@ class ChmProject:
                     self.default_file = res.group(1)
 
     def create_project(self, project_name, project_title):
+        self.log.debug('create_project...')
         self.parse_re_index_html()
         self.log.debug('Content file: %s' % self.content_file)
         self.log.debug('Default file: %s' % self.default_file)
@@ -622,8 +625,7 @@ def create_about():
     about_file.close()
 
 
-# TODO: Replace walktree by os.path.walk or better
-# by os.walk available in Python 2.3
+# TODO: Replace walktree with os.walk
 def walktree(folder, callback):
     """Recursively descends the directory rooted at dir, calling the callback
     function for each HTML file
