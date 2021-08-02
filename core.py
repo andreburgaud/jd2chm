@@ -470,7 +470,7 @@ class ChmEnv:
         create_about()
 
     def get_html_compiler_path(self):
-        """HTML Help Workshop may be installed and found in %programfiles(x86)%\HTML Help Workshop.
+        """HTML Help Workshop may be installed and found in %programfiles(x86)%\\HTML Help Workshop.
         If installed via the installer found at http://bit.ly/hhdownload, the path may be found in the
         registry. The comiler is hhc.exe. If no compiler found stop the
         """
