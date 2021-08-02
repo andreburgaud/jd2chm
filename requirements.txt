@@ -1,4 +1,4 @@
 colorama==0.3.7
-py==1.4.32
+py==1.10.0
 pypiwin32==219
 pytest==3.0.5
